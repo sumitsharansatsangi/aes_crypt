@@ -1,8 +1,6 @@
 part of aes_crypt;
 
 extension _Uint8ListExtension on Uint8List {
-  bool get isNullOrEmpty => this == null || this.isEmpty;
-
   Uint8List addList(Uint8List other) {
     int totalLength = this.length + other.length;
     Uint8List newList = Uint8List(totalLength);
@@ -34,12 +32,15 @@ extension _Uint8ListExtension on Uint8List {
       i += 2;
     }
     while (i < this.length) {
-      int firstWord = (endian == Endian.big)?
-        (this[i] << 8) + this[i + 1] : (this[i + 1] << 8) + this[i];
+      int firstWord = (endian == Endian.big)
+          ? (this[i] << 8) + this[i + 1]
+          : (this[i + 1] << 8) + this[i];
       if (0xD800 <= firstWord && firstWord <= 0xDBFF) {
-        int secondWord = (endian == Endian.big)?
-          (this[i + 2] << 8) + this[i + 3] : (this[i + 3] << 8) + this[i + 2];
-        buffer.writeCharCode(((firstWord - 0xD800) << 10) + (secondWord - 0xDC00) + 0x10000);
+        int secondWord = (endian == Endian.big)
+            ? (this[i + 2] << 8) + this[i + 3]
+            : (this[i + 3] << 8) + this[i + 2];
+        buffer.writeCharCode(
+            ((firstWord - 0xD800) << 10) + (secondWord - 0xDC00) + 0x10000);
         i += 4;
       } else {
         buffer.writeCharCode(firstWord);
@@ -108,7 +109,7 @@ extension _StringExtension on String {
   // Converts string to UTF-8 bytes
   List<int> toUtf8Bytes([bool bom = false]) {
     if (bom) {
-      Uint8List data = utf8.encode(this);
+      Uint8List data = Uint8List.fromList(utf8.encode(this));
       Uint8List dataWithBom = Uint8List(data.length + 3)
         ..setAll(0, [0xEF, 0xBB, 0xBF])
         ..setRange(3, data.length + 3, data);
